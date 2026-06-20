@@ -728,8 +728,8 @@ export default function Home() {
     lenis.on("scroll", ScrollTrigger.update);
     
     // Drive Lenis tick exclusively via GSAP ticker
-    const updateRaf = (time: number) => {
-      lenis.raf(time * 1000);
+    const updateRaf = () => {
+      lenis.raf(performance.now());
     };
     gsap.ticker.add(updateRaf);
     document.body.style.overflow = "hidden";
