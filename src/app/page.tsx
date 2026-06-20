@@ -386,9 +386,11 @@ export default function Home() {
       setIsIntroFinished(true);
       setIsMuted(false);
       document.body.style.overflow = "auto";
+      document.documentElement.style.overflow = "auto";
       playSynthSound('unlock');
-    } else if (storyStage === 'grand-celebration' || storyStage === 'ending-screen') {
+    } else {
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
     }
     if (typeof window !== "undefined") {
       setTimeout(() => {
@@ -719,20 +721,27 @@ export default function Home() {
         .catch((err) => console.error("Service Worker registration failed:", err));
     }
 
-    // Lenis smooth scroll
-    const lenis = new Lenis({
-      duration: mobile ? 0.9 : 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      prevent: (node) => node.nodeName === "CANVAS",
-    });
-    lenis.on("scroll", ScrollTrigger.update);
-    
-    // Drive Lenis tick exclusively via GSAP ticker
-    const updateRaf = () => {
-      lenis.raf(performance.now());
-    };
-    gsap.ticker.add(updateRaf);
+    // Declare Lenis and updateRaf references locally for cleanup access
+    let lenis: Lenis | null = null;
+    let updateRaf: (() => void) | null = null;
+
+    if (!mobile) {
+      // Lenis smooth scroll - Desktop only
+      lenis = new Lenis({
+        duration: 1.2,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        prevent: (node) => node.nodeName === "CANVAS",
+      });
+      lenis.on("scroll", ScrollTrigger.update);
+      
+      // Drive Lenis tick exclusively via GSAP ticker
+      updateRaf = () => {
+        if (lenis) lenis.raf(performance.now());
+      };
+      gsap.ticker.add(updateRaf);
+    }
     document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
 
     // Lift listener definitions to root level of mount useEffect for cleanup access
     const hoverSel = "a, button, .memory-card, #interactive-flame, .audio-controller, .player-btn, #candle-interactive-zone";
@@ -1433,7 +1442,9 @@ export default function Home() {
       window.removeEventListener("devicemotion", handleDeviceMotion);
       
       // Clean up GSAP and synthesizer
-      gsap.ticker.remove(updateRaf);
+      if (updateRaf) {
+        gsap.ticker.remove(updateRaf);
+      }
       if (synthRef.current) {
         synthRef.current.destroy();
       }
@@ -1441,7 +1452,9 @@ export default function Home() {
         audioRef.current.pause();
         audioRef.current.src = "";
       }
-      lenis.destroy();
+      if (lenis) {
+        lenis.destroy();
+      }
     };
 }, []);
 
