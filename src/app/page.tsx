@@ -385,8 +385,8 @@ export default function Home() {
     if (storyStage === 'experience') {
       setIsIntroFinished(true);
       setIsMuted(false);
-      document.body.style.overflow = "auto";
-      document.documentElement.style.overflow = "auto";
+      document.body.style.overflow = "";
+      document.documentElement.style.overflow = "";
       playSynthSound('unlock');
     } else {
       document.body.style.overflow = "hidden";
@@ -740,6 +740,27 @@ export default function Home() {
       };
       gsap.ticker.add(updateRaf);
     }
+
+    // Dynamic Touch Detection to disable scroll-jacking
+    const handleTouchStart = () => {
+      if (lenis) {
+        lenis.destroy();
+        lenis = null;
+      }
+      if (updateRaf) {
+        gsap.ticker.remove(updateRaf);
+        updateRaf = null;
+      }
+      if (stageRef.current === 'experience') {
+        document.body.style.overflow = "";
+        document.documentElement.style.overflow = "";
+      }
+      window.removeEventListener("touchstart", handleTouchStart);
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    }
+
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
 
@@ -1441,7 +1462,8 @@ export default function Home() {
       window.removeEventListener("touchstart", handleGlobalTouchStart);
       window.removeEventListener("devicemotion", handleDeviceMotion);
       
-      // Clean up GSAP and synthesizer
+      // Clean up GSAP, window listeners, and synthesizer
+      window.removeEventListener("touchstart", handleTouchStart);
       if (updateRaf) {
         gsap.ticker.remove(updateRaf);
       }
