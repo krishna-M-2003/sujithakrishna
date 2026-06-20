@@ -778,4 +778,10 @@ canvas { -webkit-user-callout: none; -webkit-tap-highlight-color: transparent; }
   animation: wiggle 0.5s ease-in-out infinite;
 }
 
+/* ─── Scroll Lock for Cinematic/Intro Transitions ─── */
+.no-scroll {
+  overflow: hidden !important;
+  height: 100% !important;
+}
+
 

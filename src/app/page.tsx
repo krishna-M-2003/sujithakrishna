@@ -103,7 +103,7 @@ class EmotionalSynthesizer {
     this.outputGain.gain.linearRampToValueAtTime(0.0, this.ctx.currentTime + 1.0);
     setTimeout(() => {
       if (this.synthInterval) clearInterval(this.synthInterval);
-      this.activeNodes.forEach(n => { try { n.stop(); } catch (e) {} });
+      this.activeNodes.forEach(n => { try { n.stop(); } catch (e) { } });
       this.activeNodes = [];
       this.active = false;
     }, 1100);
@@ -112,7 +112,7 @@ class EmotionalSynthesizer {
     this.stop();
     setTimeout(() => {
       if (this.ctx) {
-        this.ctx.close().catch(() => {});
+        this.ctx.close().catch(() => { });
         this.ctx = null;
       }
     }, 1200);
@@ -173,7 +173,7 @@ const playlist: Track[] = [
 
 const finalMessages = [
   "Today, we celebrate the day the universe got a little brighter. ✨",
-  "Happy Birthday, Sujitha. 🐭",
+  "Happy Birthday, Suji. 🐭",
   "You are a beautiful constellation of laughter, grace, and kindness.",
   "Every small memory with you is a star that shines forever.",
   "Even on the quietest days, your presence makes the world warmer.",
@@ -200,7 +200,7 @@ const vaultCards = [
     emoji: "🐭",
     title: "The Nicknames",
     tag: "A Cosmic Connection",
-    story: "From 'Suji' to 'Sujitha', each name carries a story of laughter, a tiny mouse emoji 🐭, and a connection that is uniquely ours. It's the small words that hold the greatest warmth."
+    story: "From 'Sujitha' to 'Suji', each name carries a story of laughter, a tiny mouse emoji 🐭, and a connection that is uniquely ours. It's the small words that hold the greatest warmth."
   },
   {
     id: "fights",
@@ -265,7 +265,7 @@ export default function Home() {
   const [vaultUnlocked, setVaultUnlocked] = useState(false);
   const [selectedCard, setSelectedCard] = useState<{ id: string; title: string; emoji: string; story: string; tag: string } | null>(null);
   const [smileLevel, setSmileLevel] = useState(1);
-  
+
   // Game 1 score (shared with Chapter I welcome panel)
   const [popScore, setPopScore] = useState(0);
   const [resetKey, setResetKey] = useState(0);
@@ -285,7 +285,7 @@ export default function Home() {
   const [shakeToast, setShakeToast] = useState(false);
 
   const fallingStarsRef = useRef<FallingStar[]>([]);
-  const triggerShakeBalloonsRef = useRef<() => void>(() => {});
+  const triggerShakeBalloonsRef = useRef<() => void>(() => { });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const synthRef = useRef<EmotionalSynthesizer | null>(null);
@@ -323,7 +323,7 @@ export default function Home() {
 
   // ─── Detect mobile once on mount ───
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768 || navigator.maxTouchPoints > 0);
+    const check = () => setIsMobile(window.innerWidth < 1024 || ("ontouchstart" in window || navigator.maxTouchPoints > 0));
     check();
   }, []);
 
@@ -377,7 +377,7 @@ export default function Home() {
         osc.connect(gain); gain.connect(ctx.destination);
         osc.start(); osc.stop(ctx.currentTime + 0.4);
       }
-    } catch (e) {}
+    } catch (e) { }
   }, []);
 
   // ─── STAGE EFFECTS ───
@@ -385,12 +385,12 @@ export default function Home() {
     if (storyStage === 'experience') {
       setIsIntroFinished(true);
       setIsMuted(false);
-      document.body.style.overflow = "";
-      document.documentElement.style.overflow = "";
+      document.documentElement.classList.remove("no-scroll");
+      document.body.classList.remove("no-scroll");
       playSynthSound('unlock');
     } else {
-      document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
+      document.documentElement.classList.add("no-scroll");
+      document.body.classList.add("no-scroll");
     }
     if (typeof window !== "undefined") {
       setTimeout(() => {
@@ -529,7 +529,7 @@ export default function Home() {
 
   const startLongPress = useCallback(() => {
     if (longPressTimerRef.current) clearTimeout(longPressTimerRef.current);
-    
+
     longPressTimerRef.current = setTimeout(() => {
       setShowHiddenMessage(true);
       setEggsFound(prev => ({ ...prev, photo: true }));
@@ -579,7 +579,7 @@ export default function Home() {
       if (audioRef.current) {
         audioRef.current.src = currentTrack.src;
         audioRef.current.load();
-        audioRef.current.play().catch(() => {});
+        audioRef.current.play().catch(() => { });
         setTotalTime(currentTrack.duration);
       }
     }
@@ -642,7 +642,7 @@ export default function Home() {
         noiseSource.connect(filter); filter.connect(gainNode); gainNode.connect(audioCtx.destination);
         noiseSource.start(); noiseSource.stop(audioCtx.currentTime + 0.8);
       }
-    } catch (e) {}
+    } catch (e) { }
 
     setCandleSubheader("Your wish is written in the stars. Let's head to the final destination...");
     setCandleInteractText("");
@@ -712,7 +712,7 @@ export default function Home() {
 
   // ─── MAIN MOUNT EFFECT ───
   useEffect(() => {
-    const mobile = window.innerWidth < 768 || navigator.maxTouchPoints > 0;
+    const mobile = window.innerWidth < 1024 || (typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0));
 
     // Register service worker for offline support
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
@@ -733,7 +733,7 @@ export default function Home() {
         prevent: (node) => node.nodeName === "CANVAS",
       });
       lenis.on("scroll", ScrollTrigger.update);
-      
+
       // Drive Lenis tick exclusively via GSAP ticker
       updateRaf = () => {
         if (lenis) lenis.raf(performance.now());
@@ -751,9 +751,10 @@ export default function Home() {
         gsap.ticker.remove(updateRaf);
         updateRaf = null;
       }
+      document.documentElement.classList.remove("lenis", "lenis-smooth", "lenis-stopped", "lenis-scrolling");
       if (stageRef.current === 'experience') {
-        document.body.style.overflow = "";
-        document.documentElement.style.overflow = "";
+        document.documentElement.classList.remove("no-scroll");
+        document.body.classList.remove("no-scroll");
       }
       window.removeEventListener("touchstart", handleTouchStart);
     };
@@ -761,8 +762,8 @@ export default function Home() {
       window.addEventListener("touchstart", handleTouchStart, { passive: true });
     }
 
-    document.body.style.overflow = "hidden";
-    document.documentElement.style.overflow = "hidden";
+    document.documentElement.classList.add("no-scroll");
+    document.body.classList.add("no-scroll");
 
     // Lift listener definitions to root level of mount useEffect for cleanup access
     const hoverSel = "a, button, .memory-card, #interactive-flame, .audio-controller, .player-btn, #candle-interactive-zone";
@@ -830,7 +831,7 @@ export default function Home() {
     const resizeSky = () => {
       skyCanvas.width = window.innerWidth;
       skyCanvas.height = window.innerHeight;
-      
+
       skyVignette = skyCtx.createRadialGradient(
         skyCanvas.width / 2,
         skyCanvas.height / 2,
@@ -1016,7 +1017,7 @@ export default function Home() {
     let mainAnimFrameId: number;
     const renderLoop = () => {
       skyCtx.clearRect(0, 0, skyCanvas.width, skyCanvas.height);
-      
+
       // Use cached skyVignette gradient (allocated in resizeSky) to save CPU and memory allocation
       skyCtx.fillStyle = skyVignette;
       skyCtx.fillRect(0, 0, skyCanvas.width, skyCanvas.height);
@@ -1039,7 +1040,7 @@ export default function Home() {
         pxX = (cursorCoords.current.x - window.innerWidth / 2) / window.innerWidth;
         pxY = (cursorCoords.current.y - window.innerHeight / 2) / window.innerHeight;
       }
-      
+
       skyCtx.lineWidth = 0.5;
 
       for (let i = 0; i < stars.length; i++) {
@@ -1089,7 +1090,7 @@ export default function Home() {
         skyCtx.rotate(fs.angle);
         skyCtx.fillStyle = fs.color;
         skyCtx.globalAlpha = fs.alpha;
-        
+
         // Draw a premium 5-point star shape
         skyCtx.beginPath();
         const spikes = 5;
@@ -1362,7 +1363,7 @@ export default function Home() {
           if (!mobile) finalHeartCtx.shadowBlur = 0;
         }
       }
-      
+
       mainAnimFrameId = requestAnimationFrame(renderLoop);
     };
     renderLoop();
@@ -1413,7 +1414,7 @@ export default function Home() {
         const deltaX = Math.abs(x - lastShakeX);
         const deltaY = Math.abs(y - lastShakeY);
         const deltaZ = Math.abs(z - lastShakeZ);
-        
+
         const forceThreshold = 14;
         const now = Date.now();
         if ((deltaX > forceThreshold || deltaY > forceThreshold || deltaZ > forceThreshold) && now - lastShakeTimestamp > 1800) {
@@ -1461,7 +1462,7 @@ export default function Home() {
       window.removeEventListener("dblclick", handleGlobalDblClick);
       window.removeEventListener("touchstart", handleGlobalTouchStart);
       window.removeEventListener("devicemotion", handleDeviceMotion);
-      
+
       // Clean up GSAP, window listeners, and synthesizer
       window.removeEventListener("touchstart", handleTouchStart);
       if (updateRaf) {
@@ -1477,8 +1478,11 @@ export default function Home() {
       if (lenis) {
         lenis.destroy();
       }
+      document.documentElement.classList.remove("lenis", "lenis-smooth", "lenis-stopped", "lenis-scrolling");
+      document.documentElement.classList.remove("no-scroll");
+      document.body.classList.remove("no-scroll");
     };
-}, []);
+  }, []);
 
   // ── SCROLL TRIGGER ANIMATIONS ──
   useEffect(() => {
@@ -1486,13 +1490,13 @@ export default function Home() {
     const ctx = gsap.context(() => {
       gsap.fromTo("#cosmic-title", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 1.5, scrollTrigger: { trigger: "#cosmic-screen", start: "top 70%", toggleActions: "play none none reverse" } });
       gsap.fromTo("#cosmic-subtitle", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 1.5, delay: 0.3, scrollTrigger: { trigger: "#cosmic-screen", start: "top 70%", toggleActions: "play none none reverse" } });
-      
+
       if (document.querySelectorAll(".memory-card").length > 0) {
         gsap.fromTo(".memory-card", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 1.2, stagger: 0.2, ease: "power3.out", scrollTrigger: { trigger: "#memory-screen", start: "top 60%", toggleActions: "play none none reverse" } });
       }
-      
+
       gsap.fromTo(".heart-content-overlay", { opacity: 0, scale: 0.95 }, { opacity: 1, scale: 1, duration: 1.5, scrollTrigger: { trigger: "#heart-screen", start: "top 50%", toggleActions: "play none none reverse" } });
-      
+
       ["cosmic-screen", "memory-screen", "heart-screen"].forEach((id, index) => {
         ScrollTrigger.create({
           trigger: `#${id}`, start: "top 40%", end: "bottom 40%",
@@ -1533,9 +1537,8 @@ export default function Home() {
 
       {/* ── Global Audio Controller ── */}
       <div
-        className={`fixed top-4 right-4 sm:top-7 sm:right-7 z-[1000] flex items-center gap-2 sm:gap-3 glass px-4 py-2 rounded-full transition-all duration-1000 cursor-pointer active:scale-95 hover:border-[rgba(191,112,128,0.35)] ${
-          isIntroFinished ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
-        }`}
+        className={`fixed top-4 right-4 sm:top-7 sm:right-7 z-[1000] flex items-center gap-2 sm:gap-3 glass px-4 py-2 rounded-full transition-all duration-1000 cursor-pointer active:scale-95 hover:border-[rgba(191,112,128,0.35)] ${isIntroFinished ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
+          }`}
         onClick={handleToggleAudio}
         role="button"
         aria-label={isMuted ? "Turn sound on" : "Turn sound off"}
@@ -1556,9 +1559,8 @@ export default function Home() {
           SCENE 1: THE GIFT INTRO
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#faf8f2] z-[999] flex flex-col justify-center items-center px-6 transition-all duration-[1.2s] ease-[0.43,0.13,0.23,0.96] ${
-          storyStage === 'gift-intro' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[-20px]'
-        }`}
+        className={`fixed inset-0 bg-[#faf8f2] z-[999] flex flex-col justify-center items-center px-6 transition-all duration-[1.2s] ease-[0.43,0.13,0.23,0.96] ${storyStage === 'gift-intro' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[-20px]'
+          }`}
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute w-[50vw] h-[50vw] rounded-full top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-tr from-[#bf7080]/8 to-transparent filter blur-[50px] animate-pulse" />
@@ -1602,18 +1604,17 @@ export default function Home() {
           SCENE 2: OPENING THE GIFT (3D BOX)
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#faf8f2] z-[998] flex flex-col justify-center items-center px-6 overflow-hidden transition-all duration-[1.2s] ease-in-out ${
-          storyStage === 'gift-open' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none scale-[0.98]'
-        }`}
+        className={`fixed inset-0 bg-[#faf8f2] z-[998] flex flex-col justify-center items-center px-6 overflow-hidden transition-all duration-[1.2s] ease-in-out ${storyStage === 'gift-open' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none scale-[0.98]'
+          }`}
       >
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 60%)' }} />
-        
+
         <div className="relative z-10 text-center flex flex-col items-center gap-6">
           <p className="chapter-eyebrow">Scene II · The Gift</p>
           <h2 className="display-serif text-2xl sm:text-3xl text-[#4a3e3d]">Your Handcrafted Gift</h2>
           <p className="font-sans text-xs text-[rgba(93,74,71,0.55)] tracking-wider">Tap the box to untie the ribbon and begin the story</p>
-          
-          <div 
+
+          <div
             className="gift-wrapper mt-8 cursor-pointer"
             onClick={() => {
               if (isGiftOpened) return;
@@ -1644,9 +1645,8 @@ export default function Home() {
           SCENES 3-8, 10: MAIN EXPERIENCE SCROLLABLE PANELS
           ══════════════════════════════════════════════ */}
       <div
-        className={`relative z-[2] w-full transition-all duration-[1s] ${
-          storyStage === 'experience' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none absolute h-[1px] overflow-hidden'
-        }`}
+        className={`relative z-[2] w-full transition-all duration-[1s] ${storyStage === 'experience' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none absolute h-[1px] overflow-hidden'
+          }`}
         ref={scrollWrapperRef}
       >
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -1663,7 +1663,7 @@ export default function Home() {
               Happy Birthday, <br />
               <span className="text-[#bf7080] font-normal italic">Kuttyma ❤️</span>
             </h1>
-            
+
             <p id="cosmic-subtitle" className="font-sans text-xs sm:text-sm font-light text-[rgba(93,74,71,0.6)] tracking-wider uppercase">
               Today, you are the main character
             </p>
@@ -1710,7 +1710,7 @@ export default function Home() {
                   }}
                 />
               ))}
-              
+
               <div className="absolute bottom-3 right-4 z-10 font-sans text-xs text-[rgba(93,74,71,0.65)] font-light">
                 Balloons Popped: <span className="font-bold text-[#bf7080]">{popScore}</span>
               </div>
@@ -1736,7 +1736,7 @@ export default function Home() {
 
             <div className="glass-warm rounded-[28px] p-6 sm:p-10 w-full relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent)' }} />
-              
+
               <div className="flex flex-col gap-5">
                 {[
                   "Rule #1: You must smile while reading this. No exceptions! 😊",
@@ -1758,9 +1758,8 @@ export default function Home() {
                         playSynthSound('pop');
                       }
                     }}
-                    className={`rule-check-item glass p-4 rounded-xl flex items-center justify-between border-[0.5px] transition-all duration-300 cursor-pointer ${
-                      acceptedRules[idx] ? 'border-[#bf7080] bg-white/40' : 'border-black/5 hover:border-[rgba(201,168,76,0.3)]'
-                    }`}
+                    className={`rule-check-item glass p-4 rounded-xl flex items-center justify-between border-[0.5px] transition-all duration-300 cursor-pointer ${acceptedRules[idx] ? 'border-[#bf7080] bg-white/40' : 'border-black/5 hover:border-[rgba(201,168,76,0.3)]'
+                      }`}
                     onClick={() => {
                       const copy = [...acceptedRules];
                       copy[idx] = !copy[idx];
@@ -1769,9 +1768,8 @@ export default function Home() {
                     }}
                   >
                     <span className="font-sans text-xs sm:text-sm font-light text-[#4a3e3d] pr-4">{rule}</span>
-                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${
-                      acceptedRules[idx] ? 'bg-[#bf7080] border-[#bf7080]' : 'border-[rgba(93,74,71,0.3)]'
-                    }`}>
+                    <div className={`w-5 h-5 rounded-full border flex items-center justify-center shrink-0 transition-all duration-300 ${acceptedRules[idx] ? 'bg-[#bf7080] border-[#bf7080]' : 'border-[rgba(93,74,71,0.3)]'
+                      }`}>
                       {acceptedRules[idx] && <span className="text-[10px] text-white">✓</span>}
                     </div>
                   </div>
@@ -1785,11 +1783,10 @@ export default function Home() {
                     setRulesAccepted(true);
                     playSynthSound('success');
                   }}
-                  className={`btn-luxury py-3 px-8 text-xs font-semibold rounded-full w-full max-w-[240px] transition-all duration-500 ${
-                    acceptedRules.every(Boolean) && !rulesAccepted
-                      ? 'opacity-100 hover:scale-105 pointer-events-auto border-[#bf7080] text-[#bf7080]'
-                      : 'opacity-50 pointer-events-none grayscale'
-                  }`}
+                  className={`btn-luxury py-3 px-8 text-xs font-semibold rounded-full w-full max-w-[240px] transition-all duration-500 ${acceptedRules.every(Boolean) && !rulesAccepted
+                    ? 'opacity-100 hover:scale-105 pointer-events-auto border-[#bf7080] text-[#bf7080]'
+                    : 'opacity-50 pointer-events-none grayscale'
+                    }`}
                 >
                   {rulesAccepted ? "Rules Accepted 😄" : "Accept Rules & Unlock"}
                 </button>
@@ -1843,7 +1840,7 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 w-full">
                 {vaultCards.map((card) => (
-                   <motion.div
+                  <motion.div
                     key={card.id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -1927,7 +1924,7 @@ export default function Home() {
               title="Long press to reveal a hidden secret message 💌"
             >
               <div className="absolute inset-0 bg-gradient-to-tr from-[#bf7080]/15 to-[#c9a84c]/15 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-              
+
               {/* Floating golden Lottie sparkles around the frame */}
               <div className="absolute -top-3 -left-3 w-12 h-12 pointer-events-none z-10 opacity-70">
                 <Lottie animationData={sparkleLottie} loop autoplay />
@@ -1977,7 +1974,7 @@ export default function Home() {
 
             <div className="glass-warm rounded-[28px] p-6 sm:p-10 w-full text-center relative overflow-hidden">
               <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.3), transparent)' }} />
-              
+
               <div className="text-6xl mb-6 select-none animate-bounce h-[80px] flex items-center justify-center">
                 {smileLevel < 25 && "😭"}
                 {smileLevel >= 25 && smileLevel < 50 && "😐"}
@@ -2115,14 +2112,14 @@ export default function Home() {
           )}
           <div className="w-full max-w-md text-center flex flex-col items-center gap-6 glass-warm rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 left-0 right-0 h-[2px]" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,168,76,0.5), transparent)' }} />
-            
+
             <span className="text-5xl animate-pulse">🎁</span>
             <h2 className="display-serif text-2xl sm:text-3xl text-[#4a3e3d]">The Journey Complete</h2>
-            
+
             <p className="font-sans text-xs sm:text-sm font-light text-[rgba(93,74,71,0.65)] leading-relaxed">
               You have popped the balloons, accepted the rules, unlocked the confidential memories, smiled to 100%, and extinguished the cake candles.
             </p>
-            
+
             <p className="font-serif italic text-[#bf7080] text-sm">
               There is only one last card left to reveal.
             </p>
@@ -2144,12 +2141,11 @@ export default function Home() {
           SCENE 10 FINALE: GRAND CELEBRATION TYPEWRITER OVERLAY
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#faf8f2] z-[997] flex flex-col justify-center items-center px-6 overflow-hidden select-none transition-all duration-[1.5s] ease-in-out ${
-          storyStage === 'grand-celebration' ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-[1.03]'
-        }`}
+        className={`fixed inset-0 bg-[#faf8f2] z-[997] flex flex-col justify-center items-center px-6 overflow-hidden select-none transition-all duration-[1.5s] ease-in-out ${storyStage === 'grand-celebration' ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-[1.03]'
+          }`}
       >
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(254,228,180,0.06) 0%, rgba(191,112,128,0.04) 50%, transparent 80%)' }} />
-        
+
         <div className="relative z-10 text-center w-full max-w-[640px] mx-auto flex flex-col items-center">
           <p className="chapter-eyebrow mb-6">The Final Message</p>
           <div className="divider-gold w-32 mb-10" />
@@ -2170,7 +2166,7 @@ export default function Home() {
           </div>
 
           <div className="divider-gold w-32 mt-10" />
-          <p className="font-handwritten text-3xl text-[#bf7080] mt-6 pulse-ambient">Suji 🐭 ✦ Sujitha 🐭</p>
+          <p className="font-handwritten text-3xl text-[#bf7080] mt-6 pulse-ambient">Suji 🐭 ✦ </p>
         </div>
       </div>
 
@@ -2178,9 +2174,8 @@ export default function Home() {
           ENDING SCREEN: HEARTBEAT BLACKOUT & MUSIC PLAYER
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#07050d] z-[999] flex flex-col justify-center items-center px-6 overflow-hidden select-none transition-all duration-[2s] ease-in-out ${
-          storyStage === 'ending-screen' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[20px]'
-        }`}
+        className={`fixed inset-0 bg-[#07050d] z-[999] flex flex-col justify-center items-center px-6 overflow-hidden select-none transition-all duration-[2s] ease-in-out ${storyStage === 'ending-screen' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[20px]'
+          }`}
       >
         <div className="relative w-full max-w-[400px] flex flex-col items-center mt-4">
           <canvas
@@ -2191,7 +2186,7 @@ export default function Home() {
 
         <div className="text-center z-10 -mt-2 flex flex-col items-center w-full max-w-sm">
           <h2 className="display-serif text-[2.2rem] sm:text-[2.8rem] text-[#e8c060] font-light leading-none gold-shimmer-text">
-            Happy Birthday, Sujitha <span className="emoji-normal">🐭</span>
+            Happy Birthday, Suji <span className="emoji-normal">🐭</span>
           </h2>
           <p className="font-handwritten text-2xl text-[#bf7080]/90 mt-3 animate-pulse">
             "Thank you for existing."
