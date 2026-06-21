@@ -388,6 +388,7 @@ export default function Home() {
       document.documentElement.classList.remove("no-scroll");
       document.body.classList.remove("no-scroll");
       playSynthSound('unlock');
+      setEggsFound(prev => ({ ...prev, doubleTap: true }));
     } else {
       document.documentElement.classList.add("no-scroll");
       document.body.classList.add("no-scroll");
@@ -968,7 +969,7 @@ export default function Home() {
     };
     const handleHeartTouchEnd = () => { pointerOnHeart.current.active = false; };
 
-    if (heartCanvas) {
+    if (heartCanvas && !mobile) {
       heartCanvas.addEventListener("click", handleHeartClick);
       heartCanvas.addEventListener("touchstart", handleHeartTouch, { passive: false });
       heartCanvas.addEventListener("touchmove", handleHeartTouchMove, { passive: false });
@@ -994,7 +995,7 @@ export default function Home() {
     };
     const handleFinalHeartTouchEnd = () => { pointerOnFinalHeart.current.active = false; };
 
-    if (finalHeartCanvas) {
+    if (finalHeartCanvas && !mobile) {
       finalHeartCanvas.addEventListener("click", handleFinalHeartClick);
       finalHeartCanvas.addEventListener("touchstart", handleFinalHeartTouch, { passive: false });
       finalHeartCanvas.addEventListener("touchmove", handleFinalHeartTouchMove, { passive: false });
@@ -1187,8 +1188,9 @@ export default function Home() {
         }
       }
 
-      // ─── Celebration: Rising Hearts ───
-      if (stageRef.current === 'grand-celebration' && Math.random() < 0.04) {
+      // ─── Celebration/Decorative: Rising Hearts ───
+      if ((stageRef.current === 'grand-celebration' && Math.random() < 0.04) ||
+          (stageRef.current === 'experience' && Math.random() < 0.015)) {
         activeHearts.current.push({
           x: Math.random() * skyCanvas.width,
           y: skyCanvas.height + 20,
@@ -1391,7 +1393,7 @@ export default function Home() {
       }
     };
 
-    if (typeof window !== "undefined") {
+    if (typeof window !== "undefined" && !mobile) {
       window.addEventListener("dblclick", handleGlobalDblClick);
       window.addEventListener("touchstart", handleGlobalTouchStart, { passive: true });
     }
@@ -1447,20 +1449,22 @@ export default function Home() {
       cancelAnimationFrame(mainAnimFrameId);
       window.removeEventListener("resize", resizeSky);
       window.removeEventListener("resize", resizeHeart);
-      if (heartCanvas) {
+      if (heartCanvas && !mobile) {
         heartCanvas.removeEventListener("click", handleHeartClick);
         heartCanvas.removeEventListener("touchstart", handleHeartTouch);
         heartCanvas.removeEventListener("touchmove", handleHeartTouchMove);
         heartCanvas.removeEventListener("touchend", handleHeartTouchEnd);
       }
-      if (finalHeartCanvas) {
+      if (finalHeartCanvas && !mobile) {
         finalHeartCanvas.removeEventListener("click", handleFinalHeartClick);
         finalHeartCanvas.removeEventListener("touchstart", handleFinalHeartTouch);
         finalHeartCanvas.removeEventListener("touchmove", handleFinalHeartTouchMove);
         finalHeartCanvas.removeEventListener("touchend", handleFinalHeartTouchEnd);
       }
-      window.removeEventListener("dblclick", handleGlobalDblClick);
-      window.removeEventListener("touchstart", handleGlobalTouchStart);
+      if (!mobile) {
+        window.removeEventListener("dblclick", handleGlobalDblClick);
+        window.removeEventListener("touchstart", handleGlobalTouchStart);
+      }
       window.removeEventListener("devicemotion", handleDeviceMotion);
 
       // Clean up GSAP, window listeners, and synthesizer
@@ -2081,7 +2085,7 @@ export default function Home() {
           <div className="relative w-full max-w-[1000px] flex flex-col justify-center items-center">
             <canvas
               ref={heartCanvasRef}
-              className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[620px] md:h-[620px] z-[3] touch-none cursor-pointer"
+              className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[620px] md:h-[620px] z-[3] touch-none cursor-pointer max-lg:pointer-events-none"
             />
             <div className="heart-content-overlay absolute z-[5] text-center max-w-[300px] sm:max-w-[480px] pointer-events-none px-4">
               <h2 className="display-serif text-[2rem] sm:text-[2.8rem] md:text-[3.5rem] text-[#4a3e3d] mb-3 drop-shadow-[0_2px_8px_rgba(183,110,121,0.15)]">
@@ -2180,7 +2184,7 @@ export default function Home() {
         <div className="relative w-full max-w-[400px] flex flex-col items-center mt-4">
           <canvas
             ref={finalHeartCanvasRef}
-            className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[360px] md:h-[360px] z-[3] touch-none cursor-pointer"
+            className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[360px] md:h-[360px] z-[3] touch-none cursor-pointer max-lg:pointer-events-none"
           />
         </div>
 

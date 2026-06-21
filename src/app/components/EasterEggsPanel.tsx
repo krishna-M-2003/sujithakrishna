@@ -59,7 +59,7 @@ export default function EasterEggsPanel({
                 { key: 'moon', title: 'Falling Stars', hint: 'Tap moon 🌙 emoji or widget' },
                 { key: 'shake', title: 'Balloons Rise', hint: 'Shake phone 📱 (or click shake)' },
                 { key: 'photo', title: 'Secret Letter', hint: 'Long press dream photo 👣' },
-                { key: 'doubleTap', title: 'Floating Hearts', hint: 'Double tap screen 💖' }
+                { key: 'doubleTap', title: 'Floating Hearts', hint: 'Beautiful background hearts 💖' }
               ].map(egg => {
                 const isFound = eggsFound[egg.key as keyof typeof eggsFound];
                 return (
