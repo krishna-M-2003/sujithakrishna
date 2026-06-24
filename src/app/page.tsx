@@ -217,18 +217,18 @@ const vaultCards = [
     story: "Endless hours talking under the moon 🌙, sharing secrets, hopes, and silent comforts. The comfort of knowing someone is listening, sharing laughter in the dark, under the exact same sky."
   },
   {
-    id: "silly",
-    emoji: "🤪",
-    title: "Silly Moments",
-    tag: "Pure Happiness",
-    story: "Being completely weird and silly together without any judgments. True comfort is when you can laugh at the most ridiculous jokes and know you're completely understood."
+    id: "hug",
+    emoji: "🫂",
+    title: "Tight Hug",
+    tag: "Behind the Door",
+    story: "The tight hug behind the door before the long holidays felt like heaven. That's enough for my whole life; I still feel the warm tight hug whenever I think about it."
   },
   {
     id: "angry",
     emoji: "😡",
     title: "Cute Angry Face",
     tag: "The Pout",
-    story: "The way your face looks when you get angry, pouting with endless cuteness. It is impossible to stay serious when you look that adorable!"
+    story: "Whenever I did something silly or stupid in class, just one look at your cute angry face was enough to quiet me down instantly. Your adorable pout is one of my favorite memories—it was always impossible to keep being mischievous when you looked that cute!"
   },
   {
     id: "dreams",
@@ -715,11 +715,21 @@ export default function Home() {
   useEffect(() => {
     const mobile = window.innerWidth < 1024 || (typeof window !== "undefined" && ("ontouchstart" in window || navigator.maxTouchPoints > 0));
 
-    // Register service worker for offline support
+    // Register service worker for offline support in production, or unregister in development
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js")
-        .then((reg) => console.log("Service Worker registered:", reg.scope))
-        .catch((err) => console.error("Service Worker registration failed:", err));
+      if (process.env.NODE_ENV === "development") {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister().then((success) => {
+              if (success) console.log("Service Worker unregistered for development");
+            });
+          }
+        });
+      } else {
+        navigator.serviceWorker.register("/sw.js")
+          .then((reg) => console.log("Service Worker registered:", reg.scope))
+          .catch((err) => console.error("Service Worker registration failed:", err));
+      }
     }
 
     // Declare Lenis and updateRaf references locally for cleanup access
@@ -1541,18 +1551,17 @@ export default function Home() {
 
       {/* ── Global Audio Controller ── */}
       <div
-        className={`fixed top-4 right-4 sm:top-7 sm:right-7 z-[1000] flex items-center gap-2 sm:gap-3 glass px-4 py-2 rounded-full transition-all duration-1000 cursor-pointer active:scale-95 hover:border-[rgba(191,112,128,0.35)] ${isIntroFinished ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"
-          }`}
+        className={`fixed top-4 right-4 sm:top-7 sm:right-7 z-[1000] flex items-center gap-2 sm:gap-3 glass px-4 py-2 rounded-full transition-all duration-1000 cursor-pointer active:scale-95 hover:border-[rgba(191,112,128,0.35)] ${isIntroFinished ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4 pointer-events-none"} ${storyStage === 'ending-screen' ? 'bg-white/10 border-white/20 hover:border-white/40' : ''}`}
         onClick={handleToggleAudio}
         role="button"
         aria-label={isMuted ? "Turn sound on" : "Turn sound off"}
       >
-        <span className="text-[9px] uppercase font-sans tracking-[0.25em] font-medium text-[rgba(191,112,128,0.85)] whitespace-nowrap">
+        <span className={`text-[9px] uppercase font-sans tracking-[0.25em] font-medium whitespace-nowrap transition-colors duration-1000 ${storyStage === 'ending-screen' ? 'text-[#e8c060]' : 'text-[rgba(191,112,128,0.85)]'}`}>
           {isMuted ? "Sound Off" : "Sound On"}
         </span>
         <div className="flex items-end gap-[3px] h-[14px] w-[18px]">
           {[0.1, 0.4, 0.2, 0.5].map((delay, i) => (
-            <div key={i} className={`w-[2px] h-[3px] bg-[#bf7080] rounded-[1px] ${!isMuted ? 'animate-visualizer-bar' : ''}`} style={!isMuted ? { animationDelay: `${delay}s` } : undefined} />
+            <div key={i} className={`w-[2px] h-[3px] rounded-[1px] transition-colors duration-1000 ${storyStage === 'ending-screen' ? 'bg-[#e8c060]' : 'bg-[#bf7080]'} ${!isMuted ? 'animate-visualizer-bar' : ''}`} style={!isMuted ? { animationDelay: `${delay}s` } : undefined} />
           ))}
         </div>
       </div>
@@ -2178,94 +2187,96 @@ export default function Home() {
           ENDING SCREEN: HEARTBEAT BLACKOUT & MUSIC PLAYER
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#07050d] z-[999] flex flex-col justify-center items-center px-6 overflow-hidden select-none transition-all duration-[2s] ease-in-out ${storyStage === 'ending-screen' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[20px]'
+        className={`fixed inset-0 bg-[#07050d] z-[999] overflow-y-auto select-none transition-all duration-[2s] ease-in-out ${storyStage === 'ending-screen' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[20px]'
           }`}
       >
-        <div className="relative w-full max-w-[400px] flex flex-col items-center mt-4">
-          <canvas
-            ref={finalHeartCanvasRef}
-            className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[360px] md:h-[360px] z-[3] touch-none cursor-pointer max-lg:pointer-events-none"
-          />
-        </div>
-
-        <div className="text-center z-10 -mt-2 flex flex-col items-center w-full max-w-sm">
-          <h2 className="display-serif text-[2.2rem] sm:text-[2.8rem] text-[#e8c060] font-light leading-none gold-shimmer-text">
-            Happy Birthday, Suji <span className="emoji-normal">🐭</span>
-          </h2>
-          <p className="font-handwritten text-2xl text-[#bf7080]/90 mt-3 animate-pulse">
-            "Thank you for existing."
-          </p>
-
-          {/* ── Music Player on Ending Screen ── */}
-          <div className="music-player-card glass-rose rounded-2xl p-4 sm:p-5 w-full mt-6 flex flex-col items-center gap-3 bg-white/5 border-white/10 shadow-xl max-w-[320px] text-white">
-            <div className="text-center">
-              <p className="chapter-eyebrow text-[7px] text-[#bf7080] mb-0.5">Now Playing</p>
-              <h3 className="display-serif text-sm text-[#faf8f2] leading-tight font-medium font-serif">
-                {playlist[currentTrackIndex].name}
-              </h3>
-              <p className="font-sans text-[8px] text-[rgba(255,255,255,0.45)] mt-0.5 uppercase tracking-widest">
-                {playlist[currentTrackIndex].artist}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <button className="player-btn text-[rgba(255,255,255,0.4)] hover:text-[#bf7080] transition-all duration-300 min-w-[32px] min-h-[32px] flex items-center justify-center active:scale-95" onClick={handlePrevTrack} aria-label="Previous">
-                <FiSkipBack className="w-4 h-4 text-white/70 hover:text-white" />
-              </button>
-              <button
-                className="w-10 h-10 rounded-full flex justify-center items-center transition-all duration-300 active:scale-95 min-w-[40px] shadow-lg"
-                style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c060)' }}
-                onClick={handleToggleAudio} aria-label={isMuted ? 'Play' : 'Pause'}
-              >
-                {isMuted ? <FiPlay className="w-4 h-4 text-[#040209] translate-x-0.5" /> : <FiPause className="w-4 h-4 text-[#040209]" />}
-              </button>
-              <button className="player-btn text-[rgba(255,255,255,0.4)] hover:text-[#bf7080] transition-all duration-300 min-w-[32px] min-h-[32px] flex items-center justify-center active:scale-95" onClick={handleNextTrack} aria-label="Next">
-                <FiSkipForward className="w-4 h-4 text-white/70 hover:text-white" />
-              </button>
-            </div>
-
-            <div className="w-full flex flex-col gap-1">
-              <div
-                ref={progressBarRef}
-                role="slider" aria-label="Playback position"
-                className="w-full h-[4px] rounded-full cursor-pointer relative touch-none bg-white/10"
-                onClick={(e) => {
-                  if (playlist[currentTrackIndex].src !== 'synth' && audioRef.current) {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    audioRef.current.currentTime = ((e.clientX - rect.left) / rect.width) * audioRef.current.duration;
-                  }
-                }}
-                onTouchMove={handleProgressTouch}
-              >
-                <div className="h-full rounded-full absolute left-0 top-0 transition-[width] duration-75"
-                  style={{ width: progressBarWidth, background: 'linear-gradient(90deg, #bf7080, #c9a84c)' }} />
-                <div className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full -translate-x-1/2 shadow-md"
-                  style={{ left: progressBarWidth, background: '#bf7080' }} />
-              </div>
-              <div className="flex justify-between text-[8px] font-sans text-white/40">
-                <span>{currentTime}</span><span>{totalTime}</span>
-              </div>
-            </div>
+        <div className="min-h-full w-full flex flex-col justify-center items-center px-6 py-12">
+          <div className="relative w-full max-w-[400px] flex flex-col items-center mt-4">
+            <canvas
+              ref={finalHeartCanvasRef}
+              className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[360px] md:h-[360px] z-[3] touch-none cursor-pointer max-lg:pointer-events-none"
+            />
           </div>
 
-          <button
-            onClick={() => {
-              setStoryStage('gift-intro');
-              setIntroStep(0);
-              setIsGiftOpened(false);
-              setPopScore(0);
-              setResetKey(prev => prev + 1);
-              setAcceptedRules([false, false, false, false]);
-              setRulesAccepted(false);
-              setVaultUnlocked(false);
-              setSmileLevel(1);
-              setMessageIndex(0);
-              playSynthSound('unlock');
-            }}
-            className="btn-luxury mt-6 py-2 px-5 text-[8px] min-h-[36px] min-w-[110px]"
-          >
-            Replay Story ↺
-          </button>
+          <div className="text-center z-10 -mt-2 flex flex-col items-center w-full max-w-sm">
+            <h2 className="display-serif text-[2.2rem] sm:text-[2.8rem] text-[#e8c060] font-light leading-none gold-shimmer-text">
+              Happy Birthday, Suji <span className="emoji-normal">🐭</span>
+            </h2>
+            <p className="font-handwritten text-2xl text-[#bf7080]/90 mt-3 animate-pulse">
+              "Thank you for existing."
+            </p>
+
+            {/* ── Music Player on Ending Screen ── */}
+            <div className="music-player-card glass-rose rounded-2xl p-4 sm:p-5 w-full mt-6 flex flex-col items-center gap-3 bg-white/5 border-white/10 shadow-xl max-w-[320px] text-white">
+              <div className="text-center">
+                <p className="chapter-eyebrow text-[7px] text-[#bf7080] mb-0.5">Now Playing</p>
+                <h3 className="display-serif text-sm text-[#faf8f2] leading-tight font-medium font-serif">
+                  {playlist[currentTrackIndex].name}
+                </h3>
+                <p className="font-sans text-[8px] text-[rgba(255,255,255,0.45)] mt-0.5 uppercase tracking-widest">
+                  {playlist[currentTrackIndex].artist}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <button className="player-btn text-[rgba(255,255,255,0.4)] hover:text-[#bf7080] transition-all duration-300 min-w-[32px] min-h-[32px] flex items-center justify-center active:scale-95" onClick={handlePrevTrack} aria-label="Previous">
+                  <FiSkipBack className="w-4 h-4 text-white/70 hover:text-white" />
+                </button>
+                <button
+                  className="w-10 h-10 rounded-full flex justify-center items-center transition-all duration-300 active:scale-95 min-w-[40px] shadow-lg"
+                  style={{ background: 'linear-gradient(135deg, #c9a84c, #e8c060)' }}
+                  onClick={handleToggleAudio} aria-label={isMuted ? 'Play' : 'Pause'}
+                >
+                  {isMuted ? <FiPlay className="w-4 h-4 text-[#040209] translate-x-0.5" /> : <FiPause className="w-4 h-4 text-[#040209]" />}
+                </button>
+                <button className="player-btn text-[rgba(255,255,255,0.4)] hover:text-[#bf7080] transition-all duration-300 min-w-[32px] min-h-[32px] flex items-center justify-center active:scale-95" onClick={handleNextTrack} aria-label="Next">
+                  <FiSkipForward className="w-4 h-4 text-white/70 hover:text-white" />
+                </button>
+              </div>
+
+              <div className="w-full flex flex-col gap-1">
+                <div
+                  ref={progressBarRef}
+                  role="slider" aria-label="Playback position"
+                  className="w-full h-[4px] rounded-full cursor-pointer relative touch-none bg-white/10"
+                  onClick={(e) => {
+                    if (playlist[currentTrackIndex].src !== 'synth' && audioRef.current) {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      audioRef.current.currentTime = ((e.clientX - rect.left) / rect.width) * audioRef.current.duration;
+                    }
+                  }}
+                  onTouchMove={handleProgressTouch}
+                >
+                  <div className="h-full rounded-full absolute left-0 top-0 transition-[width] duration-75"
+                    style={{ width: progressBarWidth, background: 'linear-gradient(90deg, #bf7080, #c9a84c)' }} />
+                  <div className="absolute top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full -translate-x-1/2 shadow-md"
+                    style={{ left: progressBarWidth, background: '#bf7080' }} />
+                </div>
+                <div className="flex justify-between text-[8px] font-sans text-white/40">
+                  <span>{currentTime}</span><span>{totalTime}</span>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => {
+                setStoryStage('gift-intro');
+                setIntroStep(0);
+                setIsGiftOpened(false);
+                setPopScore(0);
+                setResetKey(prev => prev + 1);
+                setAcceptedRules([false, false, false, false]);
+                setRulesAccepted(false);
+                setVaultUnlocked(false);
+                setSmileLevel(1);
+                setMessageIndex(0);
+                playSynthSound('unlock');
+              }}
+              className="btn-luxury mt-6 py-2 px-5 text-[8px] min-h-[36px] min-w-[110px]"
+            >
+              Replay Story ↺
+            </button>
+          </div>
         </div>
       </div>
 

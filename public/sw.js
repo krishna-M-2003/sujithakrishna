@@ -33,8 +33,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   
-  // Skip cross-origin or external CDN URLs unless they are audio files/scripts
   const url = new URL(event.request.url);
+
+  // Skip Next.js internal paths (HMR, static assets under development, etc.)
+  if (
+    url.pathname.startsWith('/_next') ||
+    url.pathname.startsWith('/__next_') ||
+    url.pathname.includes('webpack')
+  ) {
+    return;
+  }
+
+  // Skip cross-origin or external CDN URLs unless they are audio files/scripts
   if (url.origin !== self.location.origin && !url.pathname.endsWith('.mp3')) return;
 
   event.respondWith(
