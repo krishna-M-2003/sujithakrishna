@@ -1572,7 +1572,7 @@ export default function Home() {
           SCENE 1: THE GIFT INTRO
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#faf8f2] z-[999] flex flex-col justify-center items-center px-6 transition-all duration-[1.2s] ease-[0.43,0.13,0.23,0.96] ${storyStage === 'gift-intro' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[-20px]'
+        className={`fixed inset-0 bg-[#faf8f2] z-[999] flex flex-col justify-center items-center px-6 transition-all duration-[1.2s] ease-[0.43,0.13,0.23,0.96] ${storyStage === 'gift-intro' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[-20px] invisible'
           }`}
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -1617,7 +1617,7 @@ export default function Home() {
           SCENE 2: OPENING THE GIFT (3D BOX)
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#faf8f2] z-[998] flex flex-col justify-center items-center px-6 overflow-hidden transition-all duration-[1.2s] ease-in-out ${storyStage === 'gift-open' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none scale-[0.98]'
+        className={`fixed inset-0 bg-[#faf8f2] z-[998] flex flex-col justify-center items-center px-6 overflow-hidden transition-all duration-[1.2s] ease-in-out ${storyStage === 'gift-open' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none scale-[0.98] invisible'
           }`}
       >
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 60%)' }} />
@@ -2154,7 +2154,7 @@ export default function Home() {
           SCENE 10 FINALE: GRAND CELEBRATION TYPEWRITER OVERLAY
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#faf8f2] z-[997] flex flex-col justify-center items-center px-6 overflow-hidden select-none transition-all duration-[1.5s] ease-in-out ${storyStage === 'grand-celebration' ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-[1.03]'
+        className={`fixed inset-0 bg-[#faf8f2] z-[997] flex flex-col justify-center items-center px-6 overflow-hidden select-none transition-all duration-[1.5s] ease-in-out ${storyStage === 'grand-celebration' ? 'opacity-100 pointer-events-auto scale-100' : 'opacity-0 pointer-events-none scale-[1.03] invisible'
           }`}
       >
         <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(254,228,180,0.06) 0%, rgba(191,112,128,0.04) 50%, transparent 80%)' }} />
@@ -2187,7 +2187,7 @@ export default function Home() {
           ENDING SCREEN: HEARTBEAT BLACKOUT & MUSIC PLAYER
           ══════════════════════════════════════════════ */}
       <div
-        className={`fixed inset-0 bg-[#07050d] z-[999] overflow-y-auto select-none transition-all duration-[2s] ease-in-out ${storyStage === 'ending-screen' ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none translate-y-[20px]'
+        className={`fixed inset-0 bg-[#07050d] z-[999] select-none transition-all duration-[2s] ease-in-out ${storyStage === 'ending-screen' ? 'opacity-100 pointer-events-auto overflow-y-auto' : 'opacity-0 pointer-events-none translate-y-[20px] overflow-hidden invisible'
           }`}
       >
         <div className="min-h-full w-full flex flex-col justify-center items-center px-6 py-12">
