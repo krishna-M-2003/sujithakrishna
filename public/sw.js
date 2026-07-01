@@ -32,6 +32,11 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  // Skip caching on localhost/127.0.0.1 to avoid caching conflicts and infinite reload loops during local development
+  if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1' || self.location.hostname === '[::1]') {
+    return;
+  }
   
   const url = new URL(event.request.url);
 

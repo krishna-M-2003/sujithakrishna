@@ -203,11 +203,11 @@ const vaultCards = [
     story: "From 'Sujitha' to 'Suji', each name carries a story of laughter, a tiny mouse emoji 🐭, and a connection that is uniquely ours. It's the small words that hold the greatest warmth."
   },
   {
-    id: "fights",
-    emoji: "🤜",
-    title: "Epic Disputes",
-    tag: "Storms & Silences",
-    story: "Remembering our silly disputes and dramatic silence phases that always ended in laughter. Those arguments only proved how deeply we care, turning every storm into a quiet, comforting breeze."
+    id: "travel",
+    emoji: "✈️❄️",
+    title: "First Travel Plan",
+    tag: "Our Dream Journeys",
+    story: "Dreaming of our very first travel plans after marriage—from seeking blessings amidst the timeless, majestic stone carvings of Thanjai Periya Kovil, to feeling the magical chill of a beautiful snowy wonderland. Two completely different worlds, yet perfect because we'll be exploring them hand in hand."
   },
   {
     id: "calls",
@@ -412,7 +412,7 @@ export default function Home() {
         x: Math.random() * 85 + 5,
         color: colors[Math.floor(Math.random() * colors.length)],
         speed: Math.random() * 8 + 8,
-        delay: Math.random() * 15,
+        delay: -Math.random() * 16, // Use negative delay to start immediately at different heights
         popped: false,
       }));
       setBalloons(arr);
@@ -979,7 +979,7 @@ export default function Home() {
     };
     const handleHeartTouchEnd = () => { pointerOnHeart.current.active = false; };
 
-    if (heartCanvas && !mobile) {
+    if (heartCanvas) {
       heartCanvas.addEventListener("click", handleHeartClick);
       heartCanvas.addEventListener("touchstart", handleHeartTouch, { passive: false });
       heartCanvas.addEventListener("touchmove", handleHeartTouchMove, { passive: false });
@@ -1005,7 +1005,7 @@ export default function Home() {
     };
     const handleFinalHeartTouchEnd = () => { pointerOnFinalHeart.current.active = false; };
 
-    if (finalHeartCanvas && !mobile) {
+    if (finalHeartCanvas) {
       finalHeartCanvas.addEventListener("click", handleFinalHeartClick);
       finalHeartCanvas.addEventListener("touchstart", handleFinalHeartTouch, { passive: false });
       finalHeartCanvas.addEventListener("touchmove", handleFinalHeartTouchMove, { passive: false });
@@ -1403,10 +1403,8 @@ export default function Home() {
       }
     };
 
-    if (typeof window !== "undefined" && !mobile) {
-      window.addEventListener("dblclick", handleGlobalDblClick);
-      window.addEventListener("touchstart", handleGlobalTouchStart, { passive: true });
-    }
+    window.addEventListener("dblclick", handleGlobalDblClick);
+    window.addEventListener("touchstart", handleGlobalTouchStart, { passive: true });
 
     // ── Phone Shake Gesture ──
     let lastShakeX = null as number | null;
@@ -1459,22 +1457,20 @@ export default function Home() {
       cancelAnimationFrame(mainAnimFrameId);
       window.removeEventListener("resize", resizeSky);
       window.removeEventListener("resize", resizeHeart);
-      if (heartCanvas && !mobile) {
+      if (heartCanvas) {
         heartCanvas.removeEventListener("click", handleHeartClick);
         heartCanvas.removeEventListener("touchstart", handleHeartTouch);
         heartCanvas.removeEventListener("touchmove", handleHeartTouchMove);
         heartCanvas.removeEventListener("touchend", handleHeartTouchEnd);
       }
-      if (finalHeartCanvas && !mobile) {
+      if (finalHeartCanvas) {
         finalHeartCanvas.removeEventListener("click", handleFinalHeartClick);
         finalHeartCanvas.removeEventListener("touchstart", handleFinalHeartTouch);
         finalHeartCanvas.removeEventListener("touchmove", handleFinalHeartTouchMove);
         finalHeartCanvas.removeEventListener("touchend", handleFinalHeartTouchEnd);
       }
-      if (!mobile) {
-        window.removeEventListener("dblclick", handleGlobalDblClick);
-        window.removeEventListener("touchstart", handleGlobalTouchStart);
-      }
+      window.removeEventListener("dblclick", handleGlobalDblClick);
+      window.removeEventListener("touchstart", handleGlobalTouchStart);
       window.removeEventListener("devicemotion", handleDeviceMotion);
 
       // Clean up GSAP, window listeners, and synthesizer
@@ -1711,6 +1707,7 @@ export default function Home() {
                     backgroundColor: balloon.color,
                     animation: `riseBalloon ${balloon.speed}s linear infinite`,
                     animationDelay: `${balloon.delay}s`,
+                    animationFillMode: 'backwards',
                     transform: 'translateY(110%)',
                   }}
                   onClick={(e) => {
@@ -2094,7 +2091,7 @@ export default function Home() {
           <div className="relative w-full max-w-[1000px] flex flex-col justify-center items-center">
             <canvas
               ref={heartCanvasRef}
-              className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[620px] md:h-[620px] z-[3] touch-none cursor-pointer max-lg:pointer-events-none"
+              className="w-[280px] h-[280px] sm:w-[400px] sm:h-[400px] md:w-[620px] md:h-[620px] z-[3] touch-none cursor-pointer"
             />
             <div className="heart-content-overlay absolute z-[5] text-center max-w-[300px] sm:max-w-[480px] pointer-events-none px-4">
               <h2 className="display-serif text-[2rem] sm:text-[2.8rem] md:text-[3.5rem] text-[#4a3e3d] mb-3 drop-shadow-[0_2px_8px_rgba(183,110,121,0.15)]">
@@ -2194,7 +2191,7 @@ export default function Home() {
           <div className="relative w-full max-w-[400px] flex flex-col items-center mt-4">
             <canvas
               ref={finalHeartCanvasRef}
-              className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[360px] md:h-[360px] z-[3] touch-none cursor-pointer max-lg:pointer-events-none"
+              className="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] md:w-[360px] md:h-[360px] z-[3] touch-none cursor-pointer"
             />
           </div>
 
