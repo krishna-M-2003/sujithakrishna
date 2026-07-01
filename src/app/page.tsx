@@ -207,7 +207,7 @@ const vaultCards = [
     emoji: "✈️❄️",
     title: "First Travel Plan",
     tag: "Our Dream Journeys",
-    story: "Dreaming of our very first travel plans after marriage—from seeking blessings amidst the timeless, majestic stone carvings of Thanjai Periya Kovil, to feeling the magical chill of a beautiful snowy wonderland. Two completely different worlds, yet perfect because we'll be exploring them hand in hand."
+    story: "Dreaming of our first two travel destinations after marriage—seeking blessings at the majestic, historic Thanjai Periya Kovil, and exploring a beautiful snowy country. Two completely different places, yet both will be perfect because we'll be exploring them hand in hand."
   },
   {
     id: "calls",
